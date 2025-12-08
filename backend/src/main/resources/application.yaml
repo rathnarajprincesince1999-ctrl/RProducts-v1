@@ -7,12 +7,16 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update   # create | update | validate | none
-    show-sql: true
+      ddl-auto: update
+    show-sql: false
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
         dialect: org.hibernate.dialect.MySQLDialect
+
+jwt:
+  secret: RathnaProductsSecretKeyForJWTTokenGeneration2024MustBe256BitsLong
+  expiration: 86400000
 
 server:
   port: 8080
