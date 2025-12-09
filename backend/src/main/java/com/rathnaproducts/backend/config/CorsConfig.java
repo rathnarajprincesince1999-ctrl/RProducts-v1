@@ -15,7 +15,9 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://203.57.85.97", "http://rathnaproducts.store")); // frontend domains
+        config.setAllowedOrigins(
+                List.of("http://203.57.85.97", "http://rathnaproducts.store", "http://localhost:5173/")); // frontend
+                                                                                                          // domains
         config.addAllowedHeader("*");
         config.addAllowedMethod("*"); // GET, POST, PUT, DELETE, OPTIONS
         source.registerCorsConfiguration("/**", config);

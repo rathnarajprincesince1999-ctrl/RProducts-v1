@@ -1,8 +1,8 @@
-const API_URL = 'http://rathnaproducts.store/api/auth';
+import { API_URL } from '../../../config';
 
 export const authService = {
   async signup(data) {
-    const response = await fetch(`${API_URL}/signup`, {
+    const response = await fetch(`${API_URL}/auth/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
@@ -12,7 +12,7 @@ export const authService = {
   },
 
   async login(data) {
-    const response = await fetch(`${API_URL}/login`, {
+    const response = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
