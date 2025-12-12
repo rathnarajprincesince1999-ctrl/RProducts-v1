@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { API_URL } from '../../../config';
+import { APP_CONFIG } from '../../../config';
 
 const AdminModal = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({ username: '', password: '' });
@@ -13,7 +13,7 @@ const AdminModal = ({ isOpen, onClose }) => {
     setError('');
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/admin/login`, {
+      const response = await fetch(`${APP_CONFIG.API_URL}/api/admin/login`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -29,7 +29,6 @@ const AdminModal = ({ isOpen, onClose }) => {
       localStorage.setItem('admin', JSON.stringify(data));
       window.location.href = '/admin-dashboard';
     } catch (error) {
-      console.error('Login error:', error);
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
         setError('Cannot connect to server. Please check if the backend is running.');
       } else {

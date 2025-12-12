@@ -110,11 +110,15 @@ const AdminCategoriesPage = () => {
   };
 
   const handleDelete = async (id) => {
+    if (!confirm('Are you sure you want to delete this category?')) return;
     try {
       await categoryService.deleteCategory(id);
+      setMessage('Category deleted successfully!');
       await loadCategories();
+      setTimeout(() => setMessage(''), 3000);
     } catch (err) {
-      setMessage('Failed to delete category');
+      console.error('Delete error:', err);
+      setMessage(err.message || 'Failed to delete category');
     }
   };
 

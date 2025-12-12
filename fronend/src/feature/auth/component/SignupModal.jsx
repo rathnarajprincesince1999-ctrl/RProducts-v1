@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { authService } from '../service/authService';
+import { validateEmail, validatePassword, validateRequired } from '../../../utils/validation';
 
 const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
@@ -11,6 +12,18 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    
+    try {
+      validateRequired(formData.name, 'Name');
+      validateRequired(formData.email, 'Email');
+      validateEmail(formData.email);
+      validateRequired(formData.password, 'Password');
+      validatePassword(formData.password);
+    } catch (validationError) {
+      setError(validationError.message);
+      return;
+    }
+    
     setLoading(true);
     try {
       const response = await authService.signup(formData);

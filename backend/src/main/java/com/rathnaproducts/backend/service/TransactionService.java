@@ -14,6 +14,9 @@ public class TransactionService {
     private final TransactionMapper transactionMapper;
 
     public List<TransactionDto> getUserTransactions(Long userId) {
+        if (userId == null) {
+            throw new RuntimeException("User ID cannot be null");
+        }
         return transactionRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
                 .map(transactionMapper::toDto)
                 .toList();

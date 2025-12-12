@@ -13,6 +13,11 @@ import java.util.List;
 public class ProfileController {
     private final ProfileService profileService;
 
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserResponse> getProfile(@PathVariable Long userId) {
+        return ResponseEntity.ok(profileService.getProfile(userId));
+    }
+
     @PutMapping("/{userId}")
     public ResponseEntity<UserResponse> updateProfile(@PathVariable Long userId, @RequestBody ProfileUpdateRequest request) {
         return ResponseEntity.ok(profileService.updateProfile(userId, request));
@@ -26,6 +31,11 @@ public class ProfileController {
     @PostMapping("/{userId}/addresses")
     public ResponseEntity<AddressDto> saveAddress(@PathVariable Long userId, @RequestBody AddressDto dto) {
         return ResponseEntity.ok(profileService.saveAddress(userId, dto));
+    }
+
+    @PutMapping("/addresses/{addressId}")
+    public ResponseEntity<AddressDto> updateAddress(@PathVariable Long addressId, @RequestBody AddressDto dto) {
+        return ResponseEntity.ok(profileService.updateAddress(addressId, dto));
     }
 
     @DeleteMapping("/addresses/{addressId}")
@@ -42,6 +52,11 @@ public class ProfileController {
     @PostMapping("/{userId}/payments")
     public ResponseEntity<PaymentDto> savePayment(@PathVariable Long userId, @RequestBody PaymentDto dto) {
         return ResponseEntity.ok(profileService.savePayment(userId, dto));
+    }
+
+    @PutMapping("/payments/{paymentId}")
+    public ResponseEntity<PaymentDto> updatePayment(@PathVariable Long paymentId, @RequestBody PaymentDto dto) {
+        return ResponseEntity.ok(profileService.updatePayment(paymentId, dto));
     }
 
     @DeleteMapping("/payments/{paymentId}")

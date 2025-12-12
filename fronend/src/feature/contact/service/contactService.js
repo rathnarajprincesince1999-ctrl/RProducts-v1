@@ -1,6 +1,6 @@
-import { API_URL } from '../../../config';
+import { APP_CONFIG } from '../../../config';
 
-const CONTACT_API_URL = `${API_URL}/api/contact`;
+const CONTACT_API_URL = `${APP_CONFIG.API_URL}/api/contact`;
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
@@ -12,9 +12,9 @@ const getAuthHeaders = () => {
 };
 
 export const contactService = {
-  async submitContact(userId, data) {
+  async submitContact(data, userId = null) {
     try {
-      const url = CONTACT_API_URL;
+      const url = userId ? `${CONTACT_API_URL}?userId=${userId}` : CONTACT_API_URL;
       const response = await fetch(url, {
         method: 'POST',
         headers: getAuthHeaders(),
@@ -23,7 +23,7 @@ export const contactService = {
         body: JSON.stringify(data)
       });
       if (!response.ok) {
-        const error = await response.json();
+        const error = await response.json().catch(() => ({ message: 'Failed to submit contact' }));
         throw new Error(error.message || 'Failed to submit contact');
       }
       return response.json();

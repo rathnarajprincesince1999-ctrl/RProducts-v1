@@ -27,7 +27,7 @@ public class AdminService {
             throw new RuntimeException("Invalid credentials");
         }
         AdminResponse response = adminMapper.toResponse(admin);
-        response.setToken(jwtUtil.generateToken(admin.getUsername()));
+        response.setToken(jwtUtil.generateAdminToken(admin.getUsername()));
         return response;
     }
 

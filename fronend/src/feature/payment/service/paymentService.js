@@ -1,6 +1,6 @@
-import { API_URL } from '../../../config';
+import { APP_CONFIG } from '../../../config';
 
-const PAYMENT_API_URL = `${API_URL}/payments`;
+const PAYMENT_API_URL = `${APP_CONFIG.API_URL}/api/payments`;
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('adminToken') || localStorage.getItem('token');

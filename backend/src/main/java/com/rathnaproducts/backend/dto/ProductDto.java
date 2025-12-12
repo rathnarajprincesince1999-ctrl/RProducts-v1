@@ -14,6 +14,7 @@ public class ProductDto {
     private String description;
     
     @NotNull(message = "Price is required")
+    @jakarta.validation.constraints.DecimalMin(value = "0.01", message = "Price must be greater than 0")
     private Double price;
     
     private String image;

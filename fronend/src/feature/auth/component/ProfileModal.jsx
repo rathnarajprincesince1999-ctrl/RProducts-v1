@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { transactionService } from '../../transaction/service/transactionService';
 import { contactService } from '../../contact/service/contactService';
 import { profileService } from '../service/profileService';
+import { showNotification } from '../../../utils/notification';
 
 const ProfileModal = ({ isOpen, onClose, user }) => {
   const [activeTab, setActiveTab] = useState('personal');
@@ -23,8 +24,33 @@ const ProfileModal = ({ isOpen, onClose, user }) => {
   const [editingPayment, setEditingPayment] = useState(null);
 
   useEffect(() => {
-    if (isOpen && activeTab === 'transactions' && user?.id) loadTransactions();
+    if (isOpen && user?.id) {
+      if (activeTab === 'personal') loadPersonalInfo();
+      if (activeTab === 'transactions') loadTransactions();
+      if (activeTab === 'addresses') loadAddresses();
+      if (activeTab === 'payments') loadPayments();
+    }
   }, [isOpen, activeTab, user?.id]);
+
+  const loadPersonalInfo = async () => {
+    try {
+      const data = await profileService.getUserProfile(user.id);
+      setPersonalInfo({
+        name: data.name || user.name || '',
+        email: data.email || user.email || '',
+        phone: data.phone || '',
+        dateOfBirth: data.dateOfBirth || ''
+      });
+    } catch (err) {
+      // Use existing user data as fallback
+      setPersonalInfo({
+        name: user.name || '',
+        email: user.email || '',
+        phone: '',
+        dateOfBirth: ''
+      });
+    }
+  };
 
   const loadTransactions = async () => {
     try {
@@ -32,6 +58,24 @@ const ProfileModal = ({ isOpen, onClose, user }) => {
       setTransactions(data);
     } catch (err) {
       setTransactions([]);
+    }
+  };
+
+  const loadAddresses = async () => {
+    try {
+      const data = await profileService.getAddresses(user.id);
+      setAddresses(data || []);
+    } catch (err) {
+      setAddresses([]);
+    }
+  };
+
+  const loadPayments = async () => {
+    try {
+      const data = await profileService.getPayments(user.id);
+      setPayments(data || []);
+    } catch (err) {
+      setPayments([]);
     }
   };
 
@@ -57,39 +101,164 @@ const ProfileModal = ({ isOpen, onClose, user }) => {
   };
 
   const handleAddAddress = () => {
-    const newAddress = { id: Date.now(), street: '', city: '', state: '', zip: '', country: '' };
+    const tempId = 'temp-' + Date.now();
+    const newAddress = { 
+      id: tempId,
+      street: '', 
+      city: '', 
+      state: '', 
+      zip: '', 
+      country: '' 
+    };
     setAddresses([...addresses, newAddress]);
-    setEditingAddress(newAddress.id);
+    setEditingAddress(tempId);
     setShowAddressForm(true);
   };
 
-  const handleSaveAddress = (id) => {
-    setEditingAddress(null);
-    setShowAddressForm(false);
-    // API call to save address
+  const handleSaveAddress = async (id) => {
+    try {
+      const address = addresses.find(a => a.id === id);
+      if (!address) {
+        showNotification('Address not found', 'error');
+        return;
+      }
+      
+      // Validate required fields
+      if (!address.street || !address.street.trim()) {
+        showNotification('Street address is required', 'error');
+        return;
+      }
+      if (!address.city || !address.city.trim()) {
+        showNotification('City is required', 'error');
+        return;
+      }
+      if (!address.state || !address.state.trim()) {
+        showNotification('State is required', 'error');
+        return;
+      }
+      if (!address.zip || !address.zip.trim()) {
+        showNotification('ZIP code is required', 'error');
+        return;
+      }
+      if (!address.country || !address.country.trim()) {
+        showNotification('Country is required', 'error');
+        return;
+      }
+      
+      // Check if it's a new address (temporary ID)
+      const isNewAddress = String(id).startsWith('temp-');
+      
+      if (isNewAddress) {
+        // Remove the temporary ID before sending to backend
+        const { id: tempId, ...addressData } = address;
+        await profileService.saveAddress(user.id, addressData);
+        showNotification('Address saved successfully', 'success');
+      } else {
+        // Update existing address
+        await profileService.updateAddress(id, address);
+        showNotification('Address updated successfully', 'success');
+      }
+      
+      await loadAddresses();
+      setEditingAddress(null);
+      setShowAddressForm(false);
+    } catch (err) {
+      showNotification(err.message || 'Failed to save address', 'error');
+    }
   };
 
-  const handleDeleteAddress = (id) => {
-    setAddresses(addresses.filter(a => a.id !== id));
-    // API call to delete address
+  const handleDeleteAddress = async (id) => {
+    if (!confirm('Are you sure you want to delete this address?')) {
+      return;
+    }
+    try {
+      await profileService.deleteAddress(id);
+      await loadAddresses();
+      showNotification('Address deleted successfully', 'success');
+    } catch (err) {
+      showNotification('Failed to delete address', 'error');
+    }
   };
 
   const handleAddPayment = () => {
-    const newPayment = { id: Date.now(), paymentType: 'card', cardNumber: '', cardHolder: '', expiryDate: '', cvv: '', upiId: '' };
+    const tempId = 'temp-' + Date.now();
+    const newPayment = { 
+      id: tempId,
+      paymentType: 'CARD', 
+      cardNumber: '', 
+      cardHolder: '', 
+      expiryDate: '', 
+      cvv: '', 
+      upiId: '' 
+    };
     setPayments([...payments, newPayment]);
-    setEditingPayment(newPayment.id);
+    setEditingPayment(tempId);
     setShowPaymentForm(true);
   };
 
-  const handleSavePayment = (id) => {
-    setEditingPayment(null);
-    setShowPaymentForm(false);
-    // API call to save payment
+  const handleSavePayment = async (id) => {
+    try {
+      const payment = payments.find(p => p.id === id);
+      if (!payment) {
+        showNotification('Payment method not found', 'error');
+        return;
+      }
+      
+      // Validate required fields
+      if (!payment.paymentType || !payment.paymentType.trim()) {
+        showNotification('Payment type is required', 'error');
+        return;
+      }
+      
+      if (payment.paymentType === 'CARD') {
+        if (!payment.cardNumber || !payment.cardNumber.trim()) {
+          showNotification('Card number is required', 'error');
+          return;
+        }
+        if (!payment.cardHolder || !payment.cardHolder.trim()) {
+          showNotification('Card holder name is required', 'error');
+          return;
+        }
+      } else if (payment.paymentType === 'UPI') {
+        if (!payment.upiId || !payment.upiId.trim()) {
+          showNotification('UPI ID is required', 'error');
+          return;
+        }
+      }
+      
+      // Check if it's a new payment (temporary ID)
+      const isNewPayment = String(id).startsWith('temp-');
+      
+      if (isNewPayment) {
+        // Remove the temporary ID before sending to backend
+        const { id: tempId, ...paymentData } = payment;
+        await profileService.savePayment(user.id, paymentData);
+        showNotification('Payment method saved successfully', 'success');
+      } else {
+        // Update existing payment
+        await profileService.updatePayment(id, payment);
+        showNotification('Payment method updated successfully', 'success');
+      }
+      
+      await loadPayments();
+      setEditingPayment(null);
+      setShowPaymentForm(false);
+    } catch (err) {
+      showNotification(err.message || 'Failed to save payment method', 'error');
+    }
   };
 
-  const handleDeletePayment = (id) => {
-    setPayments(payments.filter(p => p.id !== id));
-    // API call to delete payment
+  const handleDeletePayment = async (id) => {
+    if (!confirm('Are you sure you want to delete this payment method?')) {
+      return;
+    }
+    try {
+      await profileService.deletePayment(id);
+      await loadPayments();
+      showNotification('Payment method deleted successfully', 'success');
+    } catch (err) {
+      showNotification('Failed to delete payment method', 'error');
+    }
   };
 
   const handleContactSubmit = async (e) => {
@@ -97,11 +266,11 @@ const ProfileModal = ({ isOpen, onClose, user }) => {
     setLoading(true);
     setMessage('');
     try {
-      await contactService.submitContact(user.id, contactForm);
+      await contactService.submitContact(contactForm, user.id);
       setMessage('Message sent successfully!');
       setContactForm({ name: user.name || '', email: user.email || '', subject: '', message: '' });
     } catch (err) {
-      setMessage('Failed to send message');
+      setMessage(err.message || 'Failed to send message');
     } finally {
       setLoading(false);
     }
@@ -156,16 +325,23 @@ const ProfileModal = ({ isOpen, onClose, user }) => {
                 <div key={addr.id} className="p-4 rounded-xl bg-white/50 dark:bg-purple-900/30 border border-white/60 dark:border-purple-400/40">
                   {editingAddress === addr.id ? (
                     <div className="space-y-3">
-                      <input type="text" placeholder="Street" value={addr.street} onChange={(e) => setAddresses(addresses.map(a => a.id === addr.id ? {...a, street: e.target.value} : a))} className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-purple-900/30 border border-white/60 dark:border-purple-400/40 text-purple-900 dark:text-purple-100" />
+                      <input type="text" placeholder="Street Address *" value={addr.street || ''} onChange={(e) => setAddresses(addresses.map(a => a.id === addr.id ? {...a, street: e.target.value} : a))} className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-purple-900/30 border border-white/60 dark:border-purple-400/40 text-purple-900 dark:text-purple-100" required />
                       <div className="grid grid-cols-2 gap-3">
-                        <input type="text" placeholder="City" value={addr.city} onChange={(e) => setAddresses(addresses.map(a => a.id === addr.id ? {...a, city: e.target.value} : a))} className="px-3 py-2 rounded-lg bg-white/50 dark:bg-purple-900/30 border border-white/60 dark:border-purple-400/40 text-purple-900 dark:text-purple-100" />
-                        <input type="text" placeholder="State" value={addr.state} onChange={(e) => setAddresses(addresses.map(a => a.id === addr.id ? {...a, state: e.target.value} : a))} className="px-3 py-2 rounded-lg bg-white/50 dark:bg-purple-900/30 border border-white/60 dark:border-purple-400/40 text-purple-900 dark:text-purple-100" />
+                        <input type="text" placeholder="City *" value={addr.city || ''} onChange={(e) => setAddresses(addresses.map(a => a.id === addr.id ? {...a, city: e.target.value} : a))} className="px-3 py-2 rounded-lg bg-white/50 dark:bg-purple-900/30 border border-white/60 dark:border-purple-400/40 text-purple-900 dark:text-purple-100" required />
+                        <input type="text" placeholder="State *" value={addr.state || ''} onChange={(e) => setAddresses(addresses.map(a => a.id === addr.id ? {...a, state: e.target.value} : a))} className="px-3 py-2 rounded-lg bg-white/50 dark:bg-purple-900/30 border border-white/60 dark:border-purple-400/40 text-purple-900 dark:text-purple-100" required />
                       </div>
                       <div className="grid grid-cols-2 gap-3">
-                        <input type="text" placeholder="ZIP" value={addr.zip} onChange={(e) => setAddresses(addresses.map(a => a.id === addr.id ? {...a, zip: e.target.value} : a))} className="px-3 py-2 rounded-lg bg-white/50 dark:bg-purple-900/30 border border-white/60 dark:border-purple-400/40 text-purple-900 dark:text-purple-100" />
-                        <input type="text" placeholder="Country" value={addr.country} onChange={(e) => setAddresses(addresses.map(a => a.id === addr.id ? {...a, country: e.target.value} : a))} className="px-3 py-2 rounded-lg bg-white/50 dark:bg-purple-900/30 border border-white/60 dark:border-purple-400/40 text-purple-900 dark:text-purple-100" />
+                        <input type="text" placeholder="ZIP Code *" value={addr.zip || ''} onChange={(e) => setAddresses(addresses.map(a => a.id === addr.id ? {...a, zip: e.target.value} : a))} className="px-3 py-2 rounded-lg bg-white/50 dark:bg-purple-900/30 border border-white/60 dark:border-purple-400/40 text-purple-900 dark:text-purple-100" required />
+                        <input type="text" placeholder="Country *" value={addr.country || ''} onChange={(e) => setAddresses(addresses.map(a => a.id === addr.id ? {...a, country: e.target.value} : a))} className="px-3 py-2 rounded-lg bg-white/50 dark:bg-purple-900/30 border border-white/60 dark:border-purple-400/40 text-purple-900 dark:text-purple-100" required />
                       </div>
-                      <button onClick={() => handleSaveAddress(addr.id)} className="w-full py-2 rounded-lg bg-purple-500 text-white font-semibold hover:bg-purple-600">Save</button>
+                      <div className="flex gap-2">
+                        <button onClick={() => handleSaveAddress(addr.id)} className="flex-1 py-2 rounded-lg bg-purple-500 text-white font-semibold hover:bg-purple-600">Save Address</button>
+                        <button onClick={() => {
+                          setAddresses(addresses.filter(a => a.id !== addr.id));
+                          setEditingAddress(null);
+                          setShowAddressForm(false);
+                        }} className="px-4 py-2 rounded-lg bg-gray-500 text-white font-semibold hover:bg-gray-600">Cancel</button>
+                      </div>
                     </div>
                   ) : (
                     <div className="flex justify-between items-start">
@@ -176,7 +352,9 @@ const ProfileModal = ({ isOpen, onClose, user }) => {
                       </div>
                       <div className="flex gap-2">
                         <button onClick={() => setEditingAddress(addr.id)} className="px-3 py-1 rounded-lg bg-blue-500 text-white text-sm hover:bg-blue-600">Edit</button>
-                        <button onClick={() => handleDeleteAddress(addr.id)} className="px-3 py-1 rounded-lg bg-red-500 text-white text-sm hover:bg-red-600">Delete</button>
+                        {!String(addr.id).startsWith('temp-') && (
+                          <button onClick={() => handleDeleteAddress(addr.id)} className="px-3 py-1 rounded-lg bg-red-500 text-white text-sm hover:bg-red-600">Delete</button>
+                        )}
                       </div>
                     </div>
                   )}
@@ -263,11 +441,11 @@ const ProfileModal = ({ isOpen, onClose, user }) => {
                 <div key={payment.id} className="p-4 rounded-xl bg-white/50 dark:bg-purple-900/30 border border-white/60 dark:border-purple-400/40">
                   {editingPayment === payment.id ? (
                     <div className="space-y-3">
-                      <select value={payment.paymentType || 'card'} onChange={(e) => setPayments(payments.map(p => p.id === payment.id ? {...p, paymentType: e.target.value} : p))} className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-purple-900/30 border border-white/60 dark:border-purple-400/40 text-purple-900 dark:text-purple-100">
-                        <option value="card">Credit/Debit Card</option>
-                        <option value="upi">UPI</option>
+                      <select value={payment.paymentType || 'CARD'} onChange={(e) => setPayments(payments.map(p => p.id === payment.id ? {...p, paymentType: e.target.value} : p))} className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-purple-900/30 border border-white/60 dark:border-purple-400/40 text-purple-900 dark:text-purple-100">
+                        <option value="CARD">Credit/Debit Card</option>
+                        <option value="UPI">UPI</option>
                       </select>
-                      {payment.paymentType === 'upi' ? (
+                      {payment.paymentType === 'UPI' ? (
                         <input type="text" placeholder="UPI ID (e.g., user@paytm)" value={payment.upiId || ''} onChange={(e) => setPayments(payments.map(p => p.id === payment.id ? {...p, upiId: e.target.value} : p))} className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-purple-900/30 border border-white/60 dark:border-purple-400/40 text-purple-900 dark:text-purple-100" />
                       ) : (
                         <>
@@ -279,12 +457,19 @@ const ProfileModal = ({ isOpen, onClose, user }) => {
                           </div>
                         </>
                       )}
-                      <button onClick={() => handleSavePayment(payment.id)} className="w-full py-2 rounded-lg bg-purple-500 text-white font-semibold hover:bg-purple-600">Save</button>
+                      <div className="flex gap-2">
+                        <button onClick={() => handleSavePayment(payment.id)} className="flex-1 py-2 rounded-lg bg-purple-500 text-white font-semibold hover:bg-purple-600">Save Payment</button>
+                        <button onClick={() => {
+                          setPayments(payments.filter(p => p.id !== payment.id));
+                          setEditingPayment(null);
+                          setShowPaymentForm(false);
+                        }} className="px-4 py-2 rounded-lg bg-gray-500 text-white font-semibold hover:bg-gray-600">Cancel</button>
+                      </div>
                     </div>
                   ) : (
                     <div className="flex justify-between items-start">
                       <div className="text-purple-900 dark:text-purple-300">
-                        {payment.paymentType === 'upi' ? (
+                        {payment.paymentType === 'UPI' ? (
                           <>
                             <p className="font-semibold">UPI Payment</p>
                             <p>{payment.upiId}</p>
@@ -299,7 +484,9 @@ const ProfileModal = ({ isOpen, onClose, user }) => {
                       </div>
                       <div className="flex gap-2">
                         <button onClick={() => setEditingPayment(payment.id)} className="px-3 py-1 rounded-lg bg-blue-500 text-white text-sm hover:bg-blue-600">Edit</button>
-                        <button onClick={() => handleDeletePayment(payment.id)} className="px-3 py-1 rounded-lg bg-red-500 text-white text-sm hover:bg-red-600">Delete</button>
+                        {!String(payment.id).startsWith('temp-') && (
+                          <button onClick={() => handleDeletePayment(payment.id)} className="px-3 py-1 rounded-lg bg-red-500 text-white text-sm hover:bg-red-600">Delete</button>
+                        )}
                       </div>
                     </div>
                   )}

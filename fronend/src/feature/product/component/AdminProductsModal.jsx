@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { productService } from '../service/productService';
 import { categoryService } from '../../category/service/categoryService';
+import { isValidImageFile } from '../../../utils/validation';
+import { showNotification } from '../../../utils/notification';
 
 const AdminProductsModal = ({ isOpen, onClose }) => {
   const [products, setProducts] = useState([]);
@@ -102,9 +104,10 @@ const AdminProductsModal = ({ isOpen, onClose }) => {
   const handleDelete = async (id) => {
     try {
       await productService.deleteProduct(id);
+      showNotification('Product deleted successfully!', 'success');
       await loadProducts();
     } catch (err) {
-      setMessage('Failed to delete product');
+      showNotification(err.message || 'Failed to delete product', 'error');
     }
   };
 

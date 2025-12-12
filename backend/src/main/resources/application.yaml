@@ -26,3 +26,6 @@ jwt:
 server:
   port: 8080
   address: 127.0.0.1 # Bind to IPv4 for Nginx proxy
+  error:
+    include-message: always
+    include-binding-errors: always

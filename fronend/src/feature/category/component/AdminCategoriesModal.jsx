@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { categoryService } from '../service/categoryService';
+import { showNotification } from '../../../utils/notification';
 
 const AdminCategoriesModal = ({ isOpen, onClose }) => {
   const [categories, setCategories] = useState([]);
@@ -26,6 +27,15 @@ const AdminCategoriesModal = ({ isOpen, onClose }) => {
   const handleFileUpload = (e, field) => {
     const file = e.target.files[0];
     if (file) {
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!validTypes.includes(file.type)) {
+        setMessage('Please select a valid image file (JPEG, PNG, GIF, or WebP)');
+        e.target.value = '';
+        return;
+      }
+      
+      // Validate file size
       if (file.size > 5000000) {
         setMessage('Image size should be less than 5MB');
         e.target.value = '';
@@ -110,9 +120,10 @@ const AdminCategoriesModal = ({ isOpen, onClose }) => {
   const handleDelete = async (id) => {
     try {
       await categoryService.deleteCategory(id);
+      showNotification('Category deleted successfully!', 'success');
       await loadCategories();
     } catch (err) {
-      setMessage('Failed to delete category');
+      showNotification(err.message || 'Failed to delete category', 'error');
     }
   };
 

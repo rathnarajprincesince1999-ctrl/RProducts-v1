@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { categoryService } from '../service/categoryService';
 import { productService } from '../../product/service/productService';
+import { cartService } from '../../cart/service/cartService';
+import { showNotification } from '../../../utils/notification';
 import DarkModeToggle from '../../auth/component/DarkModeToggle';
 import { useDarkMode } from '../../auth/hooks/useDarkMode';
 import { useAuth } from '../../auth/hooks/useAuth';
@@ -14,6 +16,15 @@ const CategoryPage = () => {
   const [category, setCategory] = useState(null);
   const [products, setProducts] = useState([]);
   useAuth('token', '/');
+
+  const addToCart = (product) => {
+    try {
+      cartService.addToCart(product);
+      showNotification('Product added to cart!', 'success');
+    } catch (error) {
+      showNotification('Failed to add product to cart', 'error');
+    }
+  };
 
   useEffect(() => {
     loadCategory();
@@ -82,11 +93,19 @@ const CategoryPage = () => {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {products.map((product) => (
-                <div key={product.id} className="backdrop-blur-lg bg-white/60 dark:bg-gray-800/40 p-5 rounded-xl border border-white/60 shadow-lg hover:scale-105 transition-transform cursor-pointer">
+                <div key={product.id} className="backdrop-blur-lg bg-white/60 dark:bg-gray-800/40 p-5 rounded-xl border border-white/60 shadow-lg hover:scale-105 transition-transform">
                   {product.image && <img src={product.image} alt={product.name} className="w-full h-40 object-cover rounded-lg mb-3" />}
                   <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{product.name}</h3>
                   {product.description && <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{product.description}</p>}
-                  <p className="text-xl font-bold text-green-700 dark:text-green-400">₹{product.price}</p>
+                  <div className="flex justify-between items-center">
+                    <p className="text-xl font-bold text-green-700 dark:text-green-400">₹{product.price}</p>
+                    <button 
+                      onClick={() => addToCart(product)}
+                      className="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold hover:from-blue-600 hover:to-cyan-600 transition-all shadow-lg"
+                    >
+                      Add to Cart
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>

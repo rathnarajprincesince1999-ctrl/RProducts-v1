@@ -26,6 +26,16 @@ public class JwtUtil {
             .compact();
     }
 
+    public String generateAdminToken(String email) {
+        return Jwts.builder()
+            .subject(email)
+            .claim("role", "ADMIN")
+            .issuedAt(new Date())
+            .expiration(new Date(System.currentTimeMillis() + expiration))
+            .signWith(key)
+            .compact();
+    }
+
     public String extractEmail(String token) {
         return Jwts.parser()
             .verifyWith(key)
@@ -33,6 +43,15 @@ public class JwtUtil {
             .parseSignedClaims(token)
             .getPayload()
             .getSubject();
+    }
+
+    public String extractRole(String token) {
+        return Jwts.parser()
+            .verifyWith(key)
+            .build()
+            .parseSignedClaims(token)
+            .getPayload()
+            .get("role", String.class);
     }
 
     public boolean validateToken(String token) {

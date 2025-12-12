@@ -24,6 +24,11 @@ public class ProductController {
         return ResponseEntity.ok(productService.getAllProducts());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductDto> getProductById(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.getProductById(id));
+    }
+
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<List<ProductDto>> getProductsByCategory(@PathVariable Long categoryId) {
         return ResponseEntity.ok(productService.getProductsByCategory(categoryId));
@@ -42,5 +47,18 @@ public class ProductController {
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductDto>> searchProducts(@RequestParam String q) {
+        return ResponseEntity.ok(productService.searchProducts(q));
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<ProductDto>> filterProducts(
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) Long categoryId) {
+        return ResponseEntity.ok(productService.filterProducts(minPrice, maxPrice, categoryId));
     }
 }

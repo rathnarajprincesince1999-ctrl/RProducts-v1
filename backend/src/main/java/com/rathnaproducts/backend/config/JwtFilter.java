@@ -36,8 +36,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // Skip JWT for public endpoints OR OPTIONS requests
         if (request.getMethod().equalsIgnoreCase("OPTIONS") ||
-                path.startsWith("/api/auth/") || path.startsWith("/api/admin/") ||
-                path.startsWith("/api/products/") || path.startsWith("/api/categories/")) {
+                path.startsWith("/api/auth/") || path.equals("/api/admin/login") ||
+                (path.startsWith("/api/products/") && request.getMethod().equalsIgnoreCase("GET")) ||
+                (path.startsWith("/api/categories/") && request.getMethod().equalsIgnoreCase("GET"))) {
             chain.doFilter(request, response);
             return;
         }
@@ -47,12 +48,19 @@ public class JwtFilter extends OncePerRequestFilter {
             String token = header.substring(7);
             if (jwtUtil.validateToken(token)) {
                 String email = jwtUtil.extractEmail(token);
+                String role = jwtUtil.extractRole(token);
+                List<org.springframework.security.core.GrantedAuthority> authorities = new ArrayList<>();
+                if (role != null) {
+                    authorities.add(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + role));
+                }
                 SecurityContextHolder.getContext().setAuthentication(
-                        new UsernamePasswordAuthenticationToken(email, null, new ArrayList<>()));
+                        new UsernamePasswordAuthenticationToken(email, null, authorities));
+            } else {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
+                return;
             }
         } else {
-            // Only block protected endpoints
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Missing authorization header");
             return;
         }
 
