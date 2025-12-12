@@ -13,9 +13,14 @@ const AdminModal = ({ isOpen, onClose }) => {
     setError('');
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/admin/login`, {
+      const response = await fetch(`${API_URL}/api/admin/login`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        mode: 'cors',
+        credentials: 'include',
         body: JSON.stringify(formData)
       });
       if (!response.ok) throw new Error('Invalid credentials');
@@ -24,7 +29,12 @@ const AdminModal = ({ isOpen, onClose }) => {
       localStorage.setItem('admin', JSON.stringify(data));
       window.location.href = '/admin-dashboard';
     } catch (error) {
-      setError(error.message || 'Admin login failed');
+      console.error('Login error:', error);
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        setError('Cannot connect to server. Please check if the backend is running.');
+      } else {
+        setError(error.message || 'Admin login failed');
+      }
     } finally {
       setLoading(false);
     }

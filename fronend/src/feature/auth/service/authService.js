@@ -1,7 +1,7 @@
 import { API_URL } from '../../../config';
 
-const AUTH_API_URL = `${API_URL}/auth`;
-const ADMIN_API_URL = `${API_URL}/admin`;
+const AUTH_API_URL = `${API_URL}/api/auth`;
+const ADMIN_API_URL = `${API_URL}/api/admin`;
 
 export const authService = {
   async signup(data) {
