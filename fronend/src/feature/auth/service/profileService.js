@@ -61,9 +61,15 @@ export const profileService = {
         credentials: 'include',
         body: JSON.stringify(data)
       });
-      if (!response.ok) throw new Error('Failed to update admin profile');
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ message: 'Failed to update admin profile' }));
+        throw new Error(error.message || `Failed to update admin profile (${response.status})`);
+      }
       return response.json();
     } catch (error) {
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        throw new Error('Cannot connect to server. Please check if the backend is running.');
+      }
       throw new Error(error.message || 'Network error');
     }
   },

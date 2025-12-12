@@ -7,15 +7,15 @@ import { showNotification } from '../../../utils/notification';
 const ProfileModal = ({ isOpen, onClose, user }) => {
   const [activeTab, setActiveTab] = useState('personal');
   const [personalInfo, setPersonalInfo] = useState({
-    name: user.name || '',
-    email: user.email || '',
+    name: user?.name || '',
+    email: user?.email || '',
     phone: '',
     dateOfBirth: ''
   });
   const [addresses, setAddresses] = useState([]);
   const [payments, setPayments] = useState([]);
   const [transactions, setTransactions] = useState([]);
-  const [contactForm, setContactForm] = useState({ name: user.name || '', email: user.email || '', subject: '', message: '' });
+  const [contactForm, setContactForm] = useState({ name: user?.name || '', email: user?.email || '', subject: '', message: '' });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [showAddressForm, setShowAddressForm] = useState(false);
@@ -83,7 +83,7 @@ const ProfileModal = ({ isOpen, onClose, user }) => {
 
   const handleSavePersonal = async () => {
     if (!user?.id) {
-      alert('User not found');
+      showNotification('User not found', 'error');
       return;
     }
     try {
@@ -94,9 +94,9 @@ const ProfileModal = ({ isOpen, onClose, user }) => {
       });
       const updatedUser = {...user, name: response.name, email: response.email};
       localStorage.setItem('user', JSON.stringify(updatedUser));
-      alert('Profile updated successfully!');
+      showNotification('Profile updated successfully!', 'success');
     } catch (err) {
-      alert(err.message || 'Failed to update profile');
+      showNotification(err.message || 'Failed to update profile', 'error');
     }
   };
 

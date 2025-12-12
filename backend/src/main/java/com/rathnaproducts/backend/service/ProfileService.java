@@ -136,8 +136,20 @@ public class ProfileService {
         }
     }
 
+    @Transactional
     public void deleteAddress(Long addressId) {
-        addressRepository.deleteById(addressId);
+        if (addressId == null) {
+            throw new RuntimeException("Address ID cannot be null");
+        }
+        
+        Address address = addressRepository.findById(addressId)
+            .orElseThrow(() -> new RuntimeException("Address not found with ID: " + addressId));
+        
+        try {
+            addressRepository.delete(address);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete address: " + e.getMessage());
+        }
     }
 
     public List<PaymentDto> getPayments(Long userId) {
@@ -226,7 +238,19 @@ public class ProfileService {
         }
     }
 
+    @Transactional
     public void deletePayment(Long paymentId) {
-        paymentRepository.deleteById(paymentId);
+        if (paymentId == null) {
+            throw new RuntimeException("Payment ID cannot be null");
+        }
+        
+        Payment payment = paymentRepository.findById(paymentId)
+            .orElseThrow(() -> new RuntimeException("Payment not found with ID: " + paymentId));
+        
+        try {
+            paymentRepository.delete(payment);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete payment: " + e.getMessage());
+        }
     }
 }

@@ -15,19 +15,19 @@ public class Payment {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     
-    @Column(length = 500)
+    @Column(length = 19) // Max 19 chars for formatted card number (XXXX-XXXX-XXXX-XXXX)
     private String cardNumber;
     
-    @Column(length = 200)
+    @Column(length = 100)
     private String cardHolder;
     
-    @Column(length = 10)
+    @Column(length = 5) // MM/YY format
     private String expiryDate;
     
-    @Column(length = 500)
+    @Column(length = 4) // CVV is typically 3-4 digits
     private String cvv;
     
-    @Column(length = 200)
+    @Column(length = 50) // UPI ID format: user@provider
     private String upiId;
     
     @Column(nullable = false, length = 20)
