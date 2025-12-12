@@ -1,6 +1,6 @@
 import { API_URL } from '../../../config';
 
-const CATEGORY_API_URL = `${API_URL}/categories`;
+const CATEGORY_API_URL = `${API_URL}/api/categories`;
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
