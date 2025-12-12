@@ -6,6 +6,7 @@ const getAuthHeaders = () => {
   const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
   return {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
     ...(token && { 'Authorization': `Bearer ${token}` })
   };
 };
@@ -17,6 +18,8 @@ export const contactService = {
       const response = await fetch(url, {
         method: 'POST',
         headers: getAuthHeaders(),
+        mode: 'cors',
+        credentials: 'include',
         body: JSON.stringify(data)
       });
       if (!response.ok) {
@@ -25,6 +28,9 @@ export const contactService = {
       }
       return response.json();
     } catch (error) {
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        throw new Error('Cannot connect to server. Please check if the backend is running.');
+      }
       throw new Error(error.message || 'Network error');
     }
   }
