@@ -1,6 +1,6 @@
 import { API_URL } from '../../../config';
 
-const CONTACT_API_URL = `${API_URL}/contact`;
+const CONTACT_API_URL = `${API_URL}/api/contact`;
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
@@ -14,7 +14,7 @@ const getAuthHeaders = () => {
 export const contactService = {
   async submitContact(userId, data) {
     try {
-      const url = userId ? `${CONTACT_API_URL}?userId=${userId}` : CONTACT_API_URL;
+      const url = CONTACT_API_URL;
       const response = await fetch(url, {
         method: 'POST',
         headers: getAuthHeaders(),
