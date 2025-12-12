@@ -6,6 +6,7 @@ const getAuthHeaders = () => {
   const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
   return {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
     ...(token && { 'Authorization': `Bearer ${token}` })
   };
 };
@@ -16,6 +17,8 @@ export const categoryService = {
       const response = await fetch(CATEGORY_API_URL, {
         method: 'POST',
         headers: getAuthHeaders(),
+        mode: 'cors',
+        credentials: 'include',
         body: JSON.stringify(data)
       });
       if (!response.ok) {
@@ -30,7 +33,11 @@ export const categoryService = {
 
   async getAllCategories() {
     try {
-      const response = await fetch(CATEGORY_API_URL, { headers: getAuthHeaders() });
+      const response = await fetch(CATEGORY_API_URL, { 
+        headers: getAuthHeaders(),
+        mode: 'cors',
+        credentials: 'include'
+      });
       if (!response.ok) throw new Error('Failed to fetch categories');
       return response.json();
     } catch (error) {
@@ -43,6 +50,8 @@ export const categoryService = {
       const response = await fetch(`${CATEGORY_API_URL}/${id}`, {
         method: 'PUT',
         headers: getAuthHeaders(),
+        mode: 'cors',
+        credentials: 'include',
         body: JSON.stringify(data)
       });
       if (!response.ok) {
@@ -59,7 +68,9 @@ export const categoryService = {
     try {
       const response = await fetch(`${CATEGORY_API_URL}/${id}`, { 
         method: 'DELETE',
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
+        mode: 'cors',
+        credentials: 'include'
       });
       if (!response.ok) throw new Error('Failed to delete category');
     } catch (error) {

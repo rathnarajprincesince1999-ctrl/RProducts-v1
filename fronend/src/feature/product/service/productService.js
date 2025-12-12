@@ -6,6 +6,7 @@ const getAuthHeaders = () => {
   const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
   return {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
     ...(token && { 'Authorization': `Bearer ${token}` })
   };
 };
@@ -16,6 +17,8 @@ export const productService = {
       const response = await fetch(PRODUCT_API_URL, {
         method: 'POST',
         headers: getAuthHeaders(),
+        mode: 'cors',
+        credentials: 'include',
         body: JSON.stringify(data)
       });
       if (!response.ok) {
@@ -30,7 +33,11 @@ export const productService = {
 
   async getAllProducts() {
     try {
-      const response = await fetch(PRODUCT_API_URL, { headers: getAuthHeaders() });
+      const response = await fetch(PRODUCT_API_URL, { 
+        headers: getAuthHeaders(),
+        mode: 'cors',
+        credentials: 'include'
+      });
       if (!response.ok) throw new Error('Failed to fetch products');
       return response.json();
     } catch (error) {
@@ -40,7 +47,11 @@ export const productService = {
 
   async getProductsByCategory(categoryId) {
     try {
-      const response = await fetch(`${PRODUCT_API_URL}/category/${categoryId}`, { headers: getAuthHeaders() });
+      const response = await fetch(`${PRODUCT_API_URL}/category/${categoryId}`, { 
+        headers: getAuthHeaders(),
+        mode: 'cors',
+        credentials: 'include'
+      });
       if (!response.ok) throw new Error('Failed to fetch products');
       return response.json();
     } catch (error) {
@@ -53,6 +64,8 @@ export const productService = {
       const response = await fetch(`${PRODUCT_API_URL}/${id}`, {
         method: 'PUT',
         headers: getAuthHeaders(),
+        mode: 'cors',
+        credentials: 'include',
         body: JSON.stringify(data)
       });
       if (!response.ok) {
@@ -69,7 +82,9 @@ export const productService = {
     try {
       const response = await fetch(`${PRODUCT_API_URL}/${id}`, { 
         method: 'DELETE',
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
+        mode: 'cors',
+        credentials: 'include'
       });
       if (!response.ok) throw new Error('Failed to delete product');
     } catch (error) {
