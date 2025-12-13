@@ -65,7 +65,14 @@ const CategoryPage = () => {
     <div className="min-h-screen transition-colors duration-500" style={{background: `linear-gradient(to bottom right, ${bgColor}, ${bgColor}dd, ${bgColor}bb)`}}>
       <nav className="backdrop-blur-xl bg-white/40 dark:bg-gray-900/30 border-b border-white/60 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-wrap justify-between items-center gap-3">
-          <h1 onClick={() => navigate('/dashboard')} className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-green-400 bg-clip-text text-transparent cursor-pointer">RATHNA Products</h1>
+          <div className="flex items-center gap-3">
+            <button onClick={() => navigate('/dashboard')} className="w-10 h-10 rounded-full backdrop-blur-xl bg-gradient-to-br from-blue-400/30 to-cyan-500/20 dark:from-blue-600/40 dark:to-cyan-700/30 border-2 border-white/40 dark:border-blue-400/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 flex items-center justify-center" aria-label="Back">
+              <svg className="w-5 h-5 text-blue-600 dark:text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <h1 onClick={() => navigate('/dashboard')} className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-green-400 bg-clip-text text-transparent cursor-pointer">RATHNA Products</h1>
+          </div>
           <div className="flex items-center gap-2 sm:gap-4">
             <span className="text-sm sm:text-base text-gray-800 dark:text-gray-300 font-semibold hidden sm:inline">Welcome, {user.name || 'User'}</span>
             <DarkModeToggle isDark={isDark} setIsDark={setIsDark} />
