@@ -18,6 +18,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
     private final com.rathnaproducts.backend.repo.ProductRepository productRepository;
+    private final com.rathnaproducts.backend.repo.CartRepository cartRepository;
 
     @Transactional
     public CategoryDto createCategory(CategoryDto categoryDto) {
@@ -101,14 +102,22 @@ public class CategoryService {
         }
         
         try {
-            // First delete all products in this category
+            // Get all products in this category
             var products = productRepository.findByCategoryId(id);
+            
             if (!products.isEmpty()) {
+                // First delete all cart items for these products
+                for (var product : products) {
+                    cartRepository.deleteByProductId(product.getId());
+                }
+                log.info("Deleted cart items for products in category {}", id);
+                
+                // Then delete all products in this category
                 productRepository.deleteAll(products);
                 log.info("Deleted {} products from category {}", products.size(), id);
             }
             
-            // Then delete the category
+            // Finally delete the category
             categoryRepository.deleteById(id);
             log.info("Deleted category with id: {}", id);
         } catch (Exception e) {

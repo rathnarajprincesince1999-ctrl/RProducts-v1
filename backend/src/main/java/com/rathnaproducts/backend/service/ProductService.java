@@ -17,6 +17,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
+    private final com.rathnaproducts.backend.repo.CartRepository cartRepository;
 
     @Transactional
     public ProductDto createProduct(ProductDto productDto) {
@@ -74,7 +75,16 @@ public class ProductService {
         if (!productRepository.existsById(id)) {
             throw new EntityNotFoundException("Product not found with id: " + id);
         }
-        productRepository.deleteById(id);
+        
+        try {
+            // First delete all cart items for this product
+            cartRepository.deleteByProductId(id);
+            
+            // Then delete the product
+            productRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete product: " + e.getMessage(), e);
+        }
     }
 
     public List<ProductDto> searchProducts(String searchTerm) {

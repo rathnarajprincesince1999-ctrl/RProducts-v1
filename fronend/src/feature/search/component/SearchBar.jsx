@@ -1,7 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useDebounce } from '../../../hooks/useDebounce';
 
 const SearchBar = ({ onSearch, placeholder = "Search products..." }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
+  useEffect(() => {
+    onSearch(debouncedSearchTerm.trim());
+  }, [debouncedSearchTerm, onSearch]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -10,7 +16,6 @@ const SearchBar = ({ onSearch, placeholder = "Search products..." }) => {
 
   const handleClear = () => {
     setSearchTerm('');
-    onSearch('');
   };
 
   return (
