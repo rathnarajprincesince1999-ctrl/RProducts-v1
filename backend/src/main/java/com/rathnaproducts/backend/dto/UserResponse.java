@@ -1,0 +1,13 @@
+package com.rathnaproducts.backend.dto;
+
+import lombok.Data;
+
+@Data
+public class UserResponse {
+    private Long id;
+    private String email;
+    private String name;
+    private String phone;
+    private String dateOfBirth;
+    private String token;
+}
