@@ -62,8 +62,8 @@ const CategoryPage = () => {
   const bgColor = category.color || '#e0f2fe';
 
   return (
-    <div className="min-h-screen transition-colors duration-500" style={{background: `linear-gradient(to bottom right, ${bgColor}, ${bgColor}dd, ${bgColor}bb)`}}>
-      <nav className="backdrop-blur-xl bg-white/40 dark:bg-gray-900/30 border-b border-white/60 shadow-lg">
+    <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark' : ''}`} style={{background: isDark ? 'linear-gradient(to bottom right, #1f2937, #111827, #0f172a)' : `linear-gradient(to bottom right, ${bgColor}, ${bgColor}dd, ${bgColor}bb)`}}>
+      <nav className="backdrop-blur-xl bg-white/40 dark:bg-gray-900/30 border-b border-white/60 dark:border-gray-600/50 shadow-lg">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 flex flex-wrap justify-between items-center gap-2 sm:gap-3">
           <div className="flex items-center gap-2 sm:gap-3">
             <button onClick={() => navigate('/dashboard')} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full backdrop-blur-xl bg-gradient-to-br from-blue-400/30 to-cyan-500/20 dark:from-blue-600/40 dark:to-cyan-700/30 border-2 border-white/40 dark:border-blue-400/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 flex items-center justify-center" aria-label="Back">
@@ -84,7 +84,7 @@ const CategoryPage = () => {
       </nav>
 
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-12">
-        <div className="backdrop-blur-2xl bg-white/60 dark:bg-gray-900/40 p-4 sm:p-6 md:p-10 rounded-xl sm:rounded-2xl md:rounded-3xl border-2 border-white/60 shadow-2xl">
+        <div className="backdrop-blur-2xl bg-white/60 dark:bg-gray-900/40 p-4 sm:p-6 md:p-10 rounded-xl sm:rounded-2xl md:rounded-3xl border-2 border-white/60 dark:border-gray-600/50 shadow-2xl dark:shadow-[0_20px_60px_rgba(0,0,0,0.3)]">
           {category.bannerImage && <img src={category.bannerImage} alt={category.name} className="w-full h-32 sm:h-48 md:h-64 object-cover rounded-lg sm:rounded-xl mb-4 sm:mb-6" />}
           
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
@@ -100,7 +100,7 @@ const CategoryPage = () => {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
               {products.map((product) => (
-                <div key={product.id} className="backdrop-blur-lg bg-white/60 dark:bg-gray-800/40 p-3 sm:p-4 md:p-5 rounded-lg sm:rounded-xl border border-white/60 shadow-lg hover:scale-105 transition-transform">
+                <div key={product.id} className="backdrop-blur-lg bg-white/60 dark:bg-gray-800/40 p-3 sm:p-4 md:p-5 rounded-lg sm:rounded-xl border border-white/60 dark:border-gray-600/50 shadow-lg hover:scale-105 transition-transform">
                   {product.image && <img src={product.image} alt={product.name} className="w-full h-32 sm:h-36 md:h-40 object-cover rounded-lg mb-2 sm:mb-3" />}
                   <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">{product.name}</h3>
                   {product.description && <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">{product.description}</p>}

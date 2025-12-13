@@ -31,22 +31,22 @@ const AdminHome = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 dark:from-gray-900 dark:via-orange-950 dark:to-red-950 transition-colors duration-500">
       <nav className="backdrop-blur-xl bg-white/40 dark:bg-orange-900/30 border-b border-white/60 dark:border-orange-400/30 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-wrap justify-between items-center gap-3">
-          <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 dark:from-orange-400 dark:to-red-400 bg-clip-text text-transparent">RATHNA Products - Admin</h1>
-          <div className="flex items-center gap-2 sm:gap-4">
-            <span className="text-sm sm:text-base text-orange-800 dark:text-orange-300 font-semibold hidden sm:inline">Admin: {admin.username || 'RATHNA'}</span>
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 flex flex-wrap justify-between items-center gap-2 sm:gap-3">
+          <h1 className="text-sm sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 dark:from-orange-400 dark:to-red-400 bg-clip-text text-transparent">RATHNA Products - Admin</h1>
+          <div className="flex items-center gap-1.5 sm:gap-2 md:gap-4">
+            <span className="text-xs sm:text-sm md:text-base text-orange-800 dark:text-orange-300 font-semibold hidden md:inline">Admin: {admin.username || 'RATHNA'}</span>
             <DarkModeToggle isDark={isDark} setIsDark={setIsDark} />
-            <button onClick={handleLogout} className="px-4 py-2 sm:px-6 text-sm sm:text-base rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold hover:from-red-600 hover:to-pink-600 transition-all shadow-lg">
+            <button onClick={handleLogout} className="px-3 py-1.5 sm:px-4 sm:py-2 md:px-6 text-xs sm:text-sm md:text-base rounded-lg sm:rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold hover:from-red-600 hover:to-pink-600 transition-all shadow-lg">
               Logout
             </button>
           </div>
         </div>
       </nav>
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-12">
-        <div className="backdrop-blur-2xl bg-white/60 dark:bg-orange-900/40 p-6 sm:p-10 rounded-2xl sm:rounded-3xl border-2 border-white/60 dark:border-orange-400/40 shadow-2xl dark:shadow-[0_20px_60px_rgba(249,115,22,0.3)]">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-orange-900 dark:text-orange-300 mb-4 sm:mb-6">Admin Dashboard</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-12">
+        <div className="backdrop-blur-2xl bg-white/60 dark:bg-orange-900/40 p-4 sm:p-6 md:p-10 rounded-xl sm:rounded-2xl md:rounded-3xl border-2 border-white/60 dark:border-orange-400/40 shadow-2xl dark:shadow-[0_20px_60px_rgba(249,115,22,0.3)]">
+          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-orange-900 dark:text-orange-300 mb-3 sm:mb-4 md:mb-6">Admin Dashboard</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             <button onClick={() => setShowProfile(true)} className="backdrop-blur-lg bg-gradient-to-br from-purple-50/60 to-pink-50/40 dark:from-purple-900/40 dark:to-pink-900/30 p-5 sm:p-6 rounded-xl sm:rounded-2xl border border-white/60 dark:border-purple-400/40 shadow-lg dark:shadow-[0_8px_32px_rgba(168,85,247,0.3)] hover:scale-105 transition-transform cursor-pointer text-left">
               <h3 className="text-xl sm:text-2xl font-bold text-purple-900 dark:text-purple-300 mb-2">Profile</h3>
               <p className="text-sm sm:text-base text-purple-700 dark:text-purple-400">Admin settings</p>

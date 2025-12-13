@@ -50,12 +50,17 @@ export const cartService = {
     }
   },
 
-  async updateQuantity(productId, quantity) {
+  async updateQuantity(itemId, quantity) {
     try {
       const userId = getUserId();
       if (!userId) throw new Error('User not logged in');
       
-      const response = await fetch(`${APP_CONFIG.API_URL}/api/cart/${userId}/update?productId=${productId}&quantity=${quantity}`, {
+      // Get cart items to find the product ID from item ID
+      const cartItems = await this.getCartItems();
+      const item = cartItems.find(item => item.id === itemId);
+      if (!item) throw new Error('Cart item not found');
+      
+      const response = await fetch(`${APP_CONFIG.API_URL}/api/cart/${userId}/update?productId=${item.productId}&quantity=${quantity}`, {
         method: 'PUT',
         headers: getAuthHeaders(),
         mode: 'cors',
@@ -68,12 +73,17 @@ export const cartService = {
     }
   },
 
-  async removeFromCart(productId) {
+  async removeFromCart(itemId) {
     try {
       const userId = getUserId();
       if (!userId) throw new Error('User not logged in');
       
-      const response = await fetch(`${APP_CONFIG.API_URL}/api/cart/${userId}/remove?productId=${productId}`, {
+      // Get cart items to find the product ID from item ID
+      const cartItems = await this.getCartItems();
+      const item = cartItems.find(item => item.id === itemId);
+      if (!item) throw new Error('Cart item not found');
+      
+      const response = await fetch(`${APP_CONFIG.API_URL}/api/cart/${userId}/remove?productId=${item.productId}`, {
         method: 'DELETE',
         headers: getAuthHeaders(),
         mode: 'cors',

@@ -52,16 +52,28 @@ export const showNotification = (message, type = 'info') => {
 };
 
 export const validateEmail = (email) => {
+  if (!email || typeof email !== 'string') {
+    throw new Error('Email is required');
+  }
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
+  if (!emailRegex.test(email.trim())) {
+    throw new Error('Please enter a valid email address');
+  }
+  return true;
 };
 
 export const validatePassword = (password) => {
-  return password && password.length >= 6;
+  if (!password || typeof password !== 'string') {
+    throw new Error('Password is required');
+  }
+  if (password.length < 6) {
+    throw new Error('Password must be at least 6 characters long');
+  }
+  return true;
 };
 
 export const validateRequired = (value, fieldName) => {
-  if (!value || value.trim() === '') {
+  if (!value || (typeof value === 'string' && value.trim() === '')) {
     throw new Error(`${fieldName} is required`);
   }
   return true;

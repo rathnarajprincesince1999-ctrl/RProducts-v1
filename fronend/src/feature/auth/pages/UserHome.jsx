@@ -25,6 +25,8 @@ const UserHome = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [cartItemCount, setCartItemCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   useAuth('token', '/');
 
   useEffect(() => {
@@ -37,9 +39,22 @@ const UserHome = () => {
   }, []);
 
   useEffect(() => {
-    loadCategories();
-    loadProducts();
-    updateCartCount();
+    const loadData = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        await Promise.all([
+          loadCategories(),
+          loadProducts(),
+          updateCartCount()
+        ]);
+      } catch (err) {
+        setError('Failed to load data');
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -78,6 +93,7 @@ const UserHome = () => {
       setCategories(data || []);
     } catch (err) {
       setCategories([]);
+      setError('Failed to load categories');
     }
   };
 
@@ -89,6 +105,7 @@ const UserHome = () => {
     } catch (err) {
       setProducts([]);
       setFilteredProducts([]);
+      setError('Failed to load products');
     }
   };
 
@@ -139,7 +156,14 @@ const UserHome = () => {
             </div>
           </div>
           
-          {categories.length === 0 ? (
+          {loading ? (
+            <div className="text-center py-8">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+              <p className="mt-2 text-emerald-700 dark:text-emerald-400">Loading...</p>
+            </div>
+          ) : error ? (
+            <p className="text-center text-red-600 dark:text-red-400 py-8">{error}</p>
+          ) : categories.length === 0 ? (
             <p className="text-center text-emerald-700 dark:text-emerald-400 py-8">No categories available yet</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6">
