@@ -184,7 +184,8 @@ function pdChangeQty(id, delta) {
 }
 
 
-let cart = JSON.parse(localStorage.getItem('hm_cart') || '[]');
+let cart = [];
+localStorage.removeItem('hm_cart');
 function saveCart() { localStorage.setItem('hm_cart', JSON.stringify(cart)); }
 function updateCartCount() {
   const total = cart.reduce((s, i) => s + i.qty, 0);
