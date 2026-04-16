@@ -357,9 +357,22 @@ function showToast(msg) {
 
 // ===== GUEST ADDRESS =====
 const ADDR_KEY = 'hm_guest_addresses';
+const ADDR_EXPIRY_KEY = 'hm_guest_addresses_expiry';
+const ADDR_TTL = 2 * 365 * 24 * 60 * 60 * 1000; // 2 years in ms
 let selectedAddrIndex = 0;
-function getAddresses() { return JSON.parse(localStorage.getItem(ADDR_KEY) || '[]'); }
-function setAddresses(arr) { localStorage.setItem(ADDR_KEY, JSON.stringify(arr)); }
+function getAddresses() {
+  const expiry = localStorage.getItem(ADDR_EXPIRY_KEY);
+  if (expiry && Date.now() > parseInt(expiry)) {
+    localStorage.removeItem(ADDR_KEY);
+    localStorage.removeItem(ADDR_EXPIRY_KEY);
+    return [];
+  }
+  return JSON.parse(localStorage.getItem(ADDR_KEY) || '[]');
+}
+function setAddresses(arr) {
+  localStorage.setItem(ADDR_KEY, JSON.stringify(arr));
+  localStorage.setItem(ADDR_EXPIRY_KEY, (Date.now() + ADDR_TTL).toString());
+}
 
 // Open address book (from navbar icon)
 function openAddressBook() {
