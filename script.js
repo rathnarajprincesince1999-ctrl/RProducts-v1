@@ -215,17 +215,6 @@ function changeQty(id, delta) {
 const navbar = document.querySelector('.navbar');
 window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 40));
 
-// ===== MOBILE MENU =====
-const menuToggle = document.querySelector('.menu-toggle');
-const mobileNav  = document.getElementById('mobileNav');
-menuToggle.addEventListener('click', () => {
-  const open = mobileNav.classList.toggle('open');
-  menuToggle.setAttribute('aria-expanded', open);
-});
-mobileNav.querySelectorAll('a').forEach(a =>
-  a.addEventListener('click', () => { mobileNav.classList.remove('open'); menuToggle.setAttribute('aria-expanded', false); })
-);
-
 // ===== SCROLL REVEAL =====
 const revealObserver = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); revealObserver.unobserve(e.target); } });
