@@ -184,8 +184,7 @@ function pdChangeQty(id, delta) {
 }
 
 
-let cart = [];
-localStorage.removeItem('hm_cart');
+let cart = JSON.parse(localStorage.getItem('hm_cart') || '[]');
 function saveCart() { localStorage.setItem('hm_cart', JSON.stringify(cart)); }
 function updateCartCount() {
   const total = cart.reduce((s, i) => s + i.qty, 0);
@@ -347,7 +346,7 @@ function showToast(msg) {
 
 // ===== GUEST ADDRESS =====
 const ADDR_KEY = 'hm_guest_addresses';
-let selectedAddrIndex = 0;
+let selectedAddrIndex = parseInt(localStorage.getItem('hm_selected_addr') || '0');
 function getAddresses() { return JSON.parse(localStorage.getItem(ADDR_KEY) || '[]'); }
 function setAddresses(arr) { localStorage.setItem(ADDR_KEY, JSON.stringify(arr)); }
 
@@ -605,7 +604,7 @@ function renderCheckoutAddresses() {
     </div>`).join('');
 }
 
-function selectAddr(i) { selectedAddrIndex = i; renderCheckoutAddresses(); }
+function selectAddr(i) { selectedAddrIndex = i; localStorage.setItem('hm_selected_addr', i); renderCheckoutAddresses(); }
 
 function renderOrderSummary() {
   const el = document.getElementById('checkoutOrderSummary');
