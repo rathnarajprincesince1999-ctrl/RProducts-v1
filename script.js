@@ -175,7 +175,7 @@ function closePD() {
 
 function pdAddToCart(id) {
   addToCart(id);
-  openProductDetail(id); // re-render to show qty controls
+  closePD();
 }
 
 function pdChangeQty(id, delta) {

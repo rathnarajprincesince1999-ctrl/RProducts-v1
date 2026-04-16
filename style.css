@@ -1042,21 +1042,29 @@ a { text-decoration: none; color: inherit; }
 
 /* ── Mobile (≤ 430px) ── */
 @media (max-width: 430px) {
-  .navbar { padding: 6px 3%; gap: 4px; }
-  .brand { flex-shrink: 0; gap: 6px; }
-  .brand-logo-wrap { width: 24px; height: 24px; }
-  .brand-name { font-size: 0.78rem; }
-  .brand-badge { display: none; }
+  .navbar {
+    padding: 8px 4%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+  .brand { gap: 8px; }
+  .brand-logo-wrap { width: 28px; height: 28px; }
+  .brand-name { font-size: 1rem; }
+  .brand-badge { font-size: 0.55rem; letter-spacing: 0.5px; display: block; }
   .nav-links { display: none; }
-  .nav-actions { gap: 4px; margin-left: 4px; flex-shrink: 0; }
-  .search-box { padding: 4px 6px; flex: 1; min-width: 0; max-width: 110px; }
-  .search-box > svg { width: 11px; height: 11px; }
-  .search-box input { width: 0; flex: 1; min-width: 0; font-size: 0.72rem; }
-  .addr-nav-btn { width: 26px; height: 26px; flex-shrink: 0; }
-  .addr-nav-btn svg { width: 12px; height: 12px; }
-  .cart-btn { width: 26px; height: 26px; flex-shrink: 0; }
-  .cart-btn svg { width: 12px; height: 12px; }
-  .cart-count { width: 13px; height: 13px; font-size: 0.46rem; top: -3px; right: -3px; border-width: 1.5px; }
+  .nav-actions {
+    display: flex; align-items: center;
+    gap: 8px; margin-left: 0; flex-shrink: 0; width: 100%;
+  }
+  .search-box { padding: 6px 10px; flex: 1; min-width: 0; max-width: none; }
+  .search-box > svg { width: 13px; height: 13px; }
+  .search-box input { width: 0; flex: 1; min-width: 0; font-size: 0.8rem; }
+  .addr-nav-btn { width: 32px; height: 32px; flex-shrink: 0; }
+  .addr-nav-btn svg { width: 15px; height: 15px; }
+  .cart-btn { width: 32px; height: 32px; flex-shrink: 0; }
+  .cart-btn svg { width: 14px; height: 14px; }
+  .cart-count { width: 15px; height: 15px; font-size: 0.52rem; top: -4px; right: -4px; }
 
   .hero { padding: 16px 3% 28px; }
   .hero-cats { gap: 12px; }
