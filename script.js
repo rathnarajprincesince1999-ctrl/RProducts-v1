@@ -718,3 +718,32 @@ document.getElementById('checkoutOverlay').addEventListener('click', function(e)
 
 // ===== INIT =====
 updateCartCount();
+
+// ===== DRAWER SWIPE RIGHT TO CLOSE (mobile) =====
+(function () {
+  const drawer = document.getElementById('productsDrawer');
+  if (!drawer) return;
+  let startX = 0;
+  drawer.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+  }, { passive: true });
+  drawer.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    if (dx > 80) closeDrawer();
+  }, { passive: true });
+})();
+
+// ===== CATEGORY SWIPE (mobile) =====
+(function () {
+  const cats = document.getElementById('categories');
+  if (!cats) return;
+  let startX = 0, startScroll = 0;
+  cats.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+    startScroll = cats.scrollLeft;
+  }, { passive: true });
+  cats.addEventListener('touchmove', e => {
+    const dx = startX - e.touches[0].clientX;
+    cats.scrollLeft = startScroll + dx;
+  }, { passive: true });
+})();
